@@ -2,6 +2,8 @@ const express = require('express');
 
 const app = express();
 
+app.use(express.json());
+
 let notes = [
     {
         id: 1,
@@ -50,6 +52,21 @@ app.delete('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id);
     notes = notes.filter(note => note.id !== id);
     res.status(204).end();
+})
+
+app.post('/api/persons', (req, res) => {
+    const id = Math.ceil(Math.random()*100);
+    const body = req.body;
+    console.log(body);
+    console.log(req.headers);
+    const newPerson = {
+        id: id,
+        name: body.name,
+        number: body.number
+    };
+    console.log(newPerson);
+    notes.push(newPerson);
+    res.send(notes);
 })
 
 const PORT = 3001;
