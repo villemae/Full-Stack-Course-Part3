@@ -57,16 +57,27 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
     const id = Math.ceil(Math.random()*100);
     const body = req.body;
-    console.log(body);
-    console.log(req.headers);
-    const newPerson = {
-        id: id,
-        name: body.name,
-        number: body.number
-    };
-    console.log(newPerson);
-    notes.push(newPerson);
-    res.send(notes);
+    if (!body.name) {
+        res.status(400).send("Name missing from request body!");
+    }
+    else if (!body.number) {
+        res.status(400).send("Number missing from request body!");
+    }
+    else if (notes.find(note => note.name == body.name)) {
+        res.status(400).send("Error: Name must be unique!");
+    }
+    else if (notes.find(note => note.id == id)) {
+        res.status(400).send("Error: ID must be unique!");
+    }
+    else {
+        const newPerson = {
+            id: id,
+            name: body.name,
+            number: body.number
+        };
+        notes.push(newPerson);
+        res.send(notes);
+    }
 })
 
 const PORT = 3001;
