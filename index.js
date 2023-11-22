@@ -1,10 +1,19 @@
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
-app.use(express.json());
+// Custom  morgan token for logging
+morgan.token('body', function getBody (req) {
+    return Object.keys(req.body).length == 0 ? '' : JSON.stringify(req.body);
+})
 
-let notes = [
+// Middleware
+app.use(express.json());
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body[req]'));
+
+// Hard-coded list of contacts
+let contacts = [
     {
         id: 1,
         name: "Arto Hellas",
@@ -27,30 +36,33 @@ let notes = [
       }
 ]
 
+// Routes---------------
+
 app.get('/', (req, res) => {
+    console.log(req.body);
     res.send("Hello World!");
 })
 
 app.get('/api/persons', (req, res) => {
-    res.json(notes);
+    res.json(contacts);
 })
 
 app.get('/info', (req, res) => {
     const date = new Date().toDateString();
     console.log(date);
-    res.send(`<p> Phonebook has info for ${notes.length} people. </p>
+    res.send(`<p> Phonebook has info for ${contacts.length} people. </p>
                 <p> ${date} </p>`);
 })
 
 app.get('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id);
-    const note = notes.find(note => note.id === id);
-    note ? res.send(note) : res.status(404).end();
+    const contact = contacts.find(contact => contact.id === id);
+    contact ? res.send(contact) : res.status(404).end();
 })
 
 app.delete('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id);
-    notes = notes.filter(note => note.id !== id);
+    contacts = contacts.filter(contact => contact.id !== id);
     res.status(204).end();
 })
 
@@ -63,10 +75,10 @@ app.post('/api/persons', (req, res) => {
     else if (!body.number) {
         res.status(400).send("Number missing from request body!");
     }
-    else if (notes.find(note => note.name == body.name)) {
+    else if (contacts.find(contact => contact.name == body.name)) {
         res.status(400).send("Error: Name must be unique!");
     }
-    else if (notes.find(note => note.id == id)) {
+    else if (contacts.find(contact => contact.id == id)) {
         res.status(400).send("Error: ID must be unique!");
     }
     else {
@@ -75,10 +87,12 @@ app.post('/api/persons', (req, res) => {
             name: body.name,
             number: body.number
         };
-        notes.push(newPerson);
-        res.send(notes);
+        contacts.push(newPerson);
+        res.send(contacts);
     }
 })
+
+// End of routes----------------
 
 const PORT = 3001;
 app.listen(PORT);
