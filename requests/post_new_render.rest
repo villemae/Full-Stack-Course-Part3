@@ -1,0 +1,7 @@
+POST https://render-test-vat0.onrender.com/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Masa Monnonen",
+    "number": "045-654321"
+}
