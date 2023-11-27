@@ -1,6 +1,9 @@
+require('dotenv').config();
+
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const Person = require('./models/person');
 
 const app = express();
 
@@ -47,20 +50,36 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-    res.json(contacts);
+    Person.find({}).then( persons => {
+        res.json(persons);
+    })
 })
 
 app.get('/info', (req, res) => {
     const date = new Date().toDateString();
     console.log(date);
-    res.send(`<p> Phonebook has info for ${contacts.length} people. </p>
+    Person.find({}).then( persons => {
+        res.send(`<p> Phonebook has info for ${persons.length} people. </p>
                 <p> ${date} </p>`);
+    })
+    
 })
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const contact = contacts.find(contact => contact.id === id);
-    contact ? res.send(contact) : res.status(404).end();
+    const id = req.params.id;
+    Person.findById(id)
+    .then( person => {
+        if (person) {
+            res.json(person);
+        } else {
+            res.status(404).send(`Person with id ${id} not found!`);
+        }
+        
+    })
+    .catch((error) => {
+        console.log(error);
+        res.status(400).send({ error: 'malformatted id' })
+    })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -70,28 +89,22 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
-    const id = Math.ceil(Math.random()*100);
     const body = req.body;
+    console.log(body);
     if (!body.name) {
         res.status(400).send("Name missing from request body!");
     }
     else if (!body.number) {
         res.status(400).send("Number missing from request body!");
     }
-    else if (contacts.find(contact => contact.name == body.name)) {
-        res.status(400).send("Error: Name must be unique!");
-    }
-    else if (contacts.find(contact => contact.id == id)) {
-        res.status(400).send("Error: ID must be unique!");
-    }
     else {
-        const newPerson = {
-            id: id,
+        const person = new Person({
             name: body.name,
-            number: body.number
-        };
-        contacts.push(newPerson);
-        res.json(newPerson);
+            number: body.number,
+        })
+        person.save().then(savedPerson => {
+            res.json(savedPerson);
+        })
     }
 })
 

@@ -11,10 +11,7 @@ else if (process.argv.length != 3 && process.argv.length != 5) {
     process.exit(1);
 }
 
-const password = process.argv[2]
-
-const url =
-  `mongodb+srv://vileeni:${password}@part03.0br4nvu.mongodb.net/phonebook?retryWrites=true&w=majority`;
+const url = process.env.MONGODB_URI;
 
 mongoose.set('strictQuery', false);
 mongoose.connect(url);
