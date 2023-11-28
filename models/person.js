@@ -6,7 +6,7 @@ const url = process.env.MONGODB_URI;
 
 console.log('connecting to', url);
 mongoose.connect(url)
-  .then(result => {
+  .then(() => {
     console.log('connected to MongoDB')
   })
   .catch((error) => {
@@ -16,12 +16,12 @@ mongoose.connect(url)
 function numberValidator (number) {
   const parts = number.split('-');
   // Check that there is one and only one '-' in the string
-  if (parts.length != 2) {
+  if (parts.length !== 2) {
     console.log(parts);
     return false;
   }
   // Check that the first part has either two or three numbers
-  else if (parts[0].length != 2 && parts[0].length != 3) {
+  else if (parts[0].length !== 2 && parts[0].length !== 3) {
     console.log(parts, parts[0], parts[1]);
     return false;
   }
@@ -49,10 +49,6 @@ const personSchema = new mongoose.Schema({
     required: true
   }
 });
-
-/*function(v) {
-        return v[2] == '-' || v[3] == '-';
-      },*/
 
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {

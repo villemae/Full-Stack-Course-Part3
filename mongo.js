@@ -5,7 +5,7 @@ if (process.argv.length<3) {
   console.log('give password as argument');
   process.exit(1);
 }
-else if (process.argv.length != 3 && process.argv.length != 5) {
+else if (process.argv.length !== 3 && process.argv.length !== 5) {
     console.log('To print all documents:\n "node mongo.js password"');
     console.log('To add a document:\n "node mongo.js password name number"');
     process.exit(1);
@@ -23,7 +23,7 @@ const personSchema = new mongoose.Schema({
 
 const Person= mongoose.model('Person', personSchema);
 
-if (process.argv.length == 3) {
+if (process.argv.length === 3) {
     Person.find({}).then(result => {
         console.log('phonebook:');
         result.forEach( person => {
@@ -32,7 +32,7 @@ if (process.argv.length == 3) {
         mongoose.connection.close();
     })
 }
-else if (process.argv.length == 5) {
+else if (process.argv.length === 5) {
     const name = process.argv[3];
     const number = process.argv[4];
 

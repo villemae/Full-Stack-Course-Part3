@@ -9,7 +9,7 @@ const app = express();
 
 // Custom  morgan token for logging
 morgan.token('body', function getBody (req) {
-    return Object.keys(req.body).length == 0 ? '' : JSON.stringify(req.body);
+    return Object.keys(req.body).length === 0 ? '' : JSON.stringify(req.body);
 })
 
 // Middleware
@@ -49,7 +49,7 @@ app.get('/api/persons/:id', (req, res, next) => {
         if (person) {
             res.json(person);
         } else {
-            res.status(404).send(`Person with id ${id} not found!`);
+            res.status(404).send(`Person with id ${req.params.id} not found!`);
         }
     })
     .catch(error => next(error))
